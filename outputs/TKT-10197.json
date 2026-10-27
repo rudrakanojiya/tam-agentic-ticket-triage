@@ -1,0 +1,68 @@
+{
+  "category": "Performance",
+  "priority": "P2",
+  "routing": "Support - Tier 2",
+  "escalation": true,
+  "tam_notification": true,
+  "duplicate_status": false,
+  "duplicate_of_ticket_id": null,
+  "clarification_needed": false,
+  "customer_reply": "Hi Sam, thank you for your patience while we investigated this. I've confirmed that your account at Hadley Industries has access to SecureVault, and I apologize for the initial confusion. Given the critical nature of your upcoming board presentation, I have escalated this issue to our technical team for immediate investigation. We understand the urgency and are prioritizing this to ensure your dashboard is fully functional for your meeting on Wednesday.",
+  "internal_note": "Identity confirmed as Hadley Industries (ACC-8956). Account is Starter tier but shows 'At Risk' status with active escalations concerning past support responsiveness. The priority has been upgraded to P2 given the board meeting deadline and the 'At Risk' status. Informed TAM (Yuki Tanaka) via notification flag. No previous tickets found for this specific dashboard issue on this account. Proceeding with technical investigation for performance degradation. Referenced KB articles: troubleshooting/performance-and-integrations, products/securevault, products/analyticshub.",
+  "reasoning_trace": [
+    {
+      "thought": "Investigating slow load times for SecureVault dashboard for Enterprise account.",
+      "action": "{\"tool\": \"get_account_context\", \"input\": {\"account_id\": \"ACC-5748\"}}",
+      "observation": "{\"status\": \"matched\", \"account\": {\"account_id\": \"ACC-5748\", \"company\": \"Nexus Data\", \"tam\": \"Yuki Tanaka\", \"plan_tier\": \"Starter\", \"arr_usd\": 120000, \"seats_licensed\": 379, \"seats_active\": 194, \"products\": [\"DataBridge Pro\", \"AnalyticsHub\"], \"health_status\": \"New\", \"usage_trend\": \"Increasing\", \"open_tickets\": 7, \"p1_tickets_last_30d\": 0, \"customer_since\": \"2025-08-28\", \"renewal_date\": \"2027-03-03\", \"last_qbr_date\": \"2025-12-14\", \"primary_contact\": {\"name\": \"Sam Okafor\", \"title\": \"Engineering Manager\"}, \"escalation_notes\": [], \"nps_score\": null, \"last_login_days_ago\": 7, \"integrations_active\": [\"HubSpot\", \"Zendesk\"], \"region\": \"US-Central\", \"industry\": \"Government\"}, \"support_tier\": \"Standard\", \"days_until_renewal\": 286, \"metrics_source\": \"Account snapshot only; monthly usage metrics unavailable\", \"escalation_notes\": []}",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "The customer identified as Nexus Data (ACC-5748) reports a performance issue with SecureVault, but this account is not associated with SecureVault, which is not listed in their product suite. I will search for existing issues related to SecureVault dashboard performance.",
+      "action": "{\"tool\": \"search_kb\", \"input\": {\"query\": \"SecureVault dashboard slow load time\", \"top_k\": 3}}",
+      "observation": "[{\"article_id\": \"troubleshooting/performance-and-integrations\", \"title\": \"Troubleshooting: Performance Issues\", \"path\": \"troubleshooting/performance-and-integrations.md\", \"cross_references\": [], \"score\": 0.1456, \"excerpt\": \"# Troubleshooting: Performance Issues\\n\\nThis guide covers performance degradation, timeouts, and slow response issues across all products.\\n\\n---\\n\\n## Error Reference\\n\\n| Error | Likely Cause | Resolution |\\n|-------|-------------|------------|\\n| `ERR_CONNECTION_TIMEOUT after 30s` | Network or source unreachable | Check firewall, VPN, and source availability |\\n| `PIPELINE_STALLED: no heartbeat for 15 minutes` | Pipeline worker crashed or source blocked | Restart pipeline; check source credentials |\\n| `RATE_LIMIT_EXCEEDED: retry after 60s` | API quota hit on source or destination | Reduce batch size or add retry backoff |\\n| `QUOTA_EXCEEDED: storage limit reached` | Plan storage limit hit | Archive old data or upgrade plan |\\n| `DEPENDENCY_UNAVAILABLE` | Downstream service unreachable | Check status page; retry after resolution |\\n\\n---\\n\\n## Diagnosing Slow Performance\\n\\n### Step 1 — Identify where the slowness is\\n\\n- **UI slow (all pages):** likely a client-side network issue or a platform-wide incident. Check the status page at `status.yourplatform.com`.\\n- **Specific page/feature slow:** usually a heavy query or a missing cache.\\n- **API slow:** check response headers for `X-Processing-Time`. I\"}, {\"article_id\": \"products/securevault\", \"title\": \"SecureVault — Product Reference\", \"path\": \"products/securevault.md\", \"cross_references\": [], \"score\": 0.1027, \"excerpt\": \"# SecureVault — Product Reference\\n\\n## Overview\\n\\nSecureVault is an enterprise secrets and key management platform. It provides centralised storage for API keys, credentials, certificates, and encryption keys, with audit logging, role-based access control, and integrations with major cloud providers and CI/CD pipelines.\\n\\n**Current stable version:** 2.6.0  \\n**Previous stable version:** 2.5.3\\n\\n---\\n\\n## Core Modules\\n\\n### Authentication\\n\\nSecureVault supports multiple authentication methods:\\n- **Username + password** with MFA (TOTP or hardware key)\\n- **SSO via SAML 2.0** (Okta, Azure AD, Google Workspace, Ping Identity)\\n- **Machine-to-machine:** service account tokens with scoped permissions\\n\\nToken expiry defaults: user tokens 8 hours, service tokens 90 days.  \\n`AUTH_TOKEN_EXPIRED` errors indicate the token has exceeded its TTL — re-authenticate or rotate the service token.\\n\\n### Encryption\\n\\nAll secrets are encrypted at rest using AES-256-GCM. In-transit encryption uses TLS 1.3 minimum.\\n\\n- Customer-managed keys (CMK) available on Business and Enterprise plans.\\n- Key rotation: automatic 90-day rotation (configurable). Manual rotation available anytime.\\n- Hardware Security Module (HSM) backin\"}, {\"article_id\": \"products/analyticshub\", \"title\": \"AnalyticsHub — Product Reference\", \"path\": \"products/analyticshub.md\", \"cross_references\": [], \"score\": 0.0615, \"excerpt\": \"# AnalyticsHub — Product Reference\\n\\n## Overview\\n\\nAnalyticsHub is a self-serve business intelligence platform that connects to live data sources, enables drag-and-drop dashboard creation, and delivers scheduled reports via email, Slack, or webhook. It is designed for both technical and non-technical users.\\n\\n**Current stable version:** 3.0.0  \\n**Previous stable version:** 2.9.4\\n\\n---\\n\\n## Core Modules\\n\\n### Dashboard\\n\\nInteractive visualisation canvas. Supports charts (line, bar, scatter, pie, heatmap), KPI tiles, data tables, and embedded SQL views.\\n\\n- **Performance note:** dashboards with more than 20 widgets or queries spanning > 12 months of data may load slowly. Use the Query Optimiser (Settings → Performance → Optimise) before publishing.\\n- Auto-refresh interval: configurable from 1 minute to 24 hours.\\n- Sharing: dashboards can be shared as view-only links (no login required) or embedded via iframe.\\n\\n### Reports\\n\\nScheduled PDF/CSV/Excel exports delivered on a cron schedule.\\n\\n- Maximum report size: 50 MB. Reports exceeding this are split into parts automatically.\\n- Exports are retained for 30 days in Settings → Reports → Archive.\\n- If an export is truncated at 1000 rows, check the p\"}]",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "The customer (Nexus Data) reported a performance issue in SecureVault; however, our records indicate they do not subscribe to SecureVault. The account context suggests they use AnalyticsHub, which has known dashboard performance caveats. I will clarify if they are using the correct product/account.",
+      "action": "finish",
+      "observation": "Output validation failed: Evidence missing; use tools before finishing: resolve_account, search_ticket_history",
+      "outcome": "Rejected; correction required"
+    },
+    {
+      "thought": "Resolving customer identity for account ACC-5748 to confirm subscription details.",
+      "action": "{\"tool\": \"resolve_account\", \"input\": {\"query_text\": \"Hadley Industries\"}}",
+      "observation": "{\"status\": \"matched\", \"match\": {\"account_id\": \"ACC-8956\", \"name\": \"Hadley Industries\", \"tier\": \"Starter\", \"renewal\": \"2026-10-19\", \"confidence\": 0.95, \"evidence\": [\"company_name\"]}, \"candidates\": [{\"account_id\": \"ACC-8956\", \"name\": \"Hadley Industries\", \"tier\": \"Starter\", \"renewal\": \"2026-10-19\", \"confidence\": 0.95, \"evidence\": [\"company_name\"]}]}",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "Resolving history for Hadley Industries (ACC-8956) to check for similar performance issues.",
+      "action": "{\"tool\": \"search_ticket_history\", \"input\": {\"account_id\": \"ACC-8956\", \"query_text\": \"dashboard loading speed\", \"limit\": 5}}",
+      "observation": "[{\"ticket_id\": \"TKT-10496\", \"subject\": \"Dashboard loading times unacceptable — AnalyticsHub\", \"body\": \"Our Data Sources dashboard in AnalyticsHub is now taking over 55 seconds to load. This was not an issue 2 weeks ago. We have a board presentation on Monday and need this resolved.\\n\\nCustomer ID: ACC-4912\\nPriority: High\", \"status\": \"Open\", \"created_at\": \"2026-02-23T05:32:32.204894Z\", \"score\": 0.3221, \"identity_basis\": \"company_name\"}, {\"ticket_id\": \"TKT-10319\", \"subject\": \"Dashboard loading times unacceptable — WorkflowEngine\", \"body\": \"Our Triggers dashboard in WorkflowEngine is now taking over 65 seconds to load. This was not an issue 2 weeks ago. We have a board presentation on Monday and need this resolved.\\n\\nCustomer ID: ACC-6766\\nPriority: High\", \"status\": \"Open\", \"created_at\": \"2026-04-22T14:37:32.198431Z\", \"score\": 0.3218, \"identity_basis\": \"company_name\"}]",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "The customer Hadley Industries (ACC-8956) reported a performance issue on SecureVault, but their plan is Starter and there is no record of SecureVault in their environment. Given the similarities to other reports of 'Dashboard loading times unacceptable', I will clarify if they are using the correct account or product, as their provided ticket details conflict with internal account data.",
+      "action": "finish",
+      "observation": "Output validation failed: Fetch context for the resolved account before finishing",
+      "outcome": "Rejected; correction required"
+    },
+    {
+      "thought": "Retrieving account context for the resolved account ACC-8956 (Hadley Industries).",
+      "action": "{\"tool\": \"get_account_context\", \"input\": {\"account_id\": \"ACC-8956\"}}",
+      "observation": "{\"status\": \"matched\", \"account\": {\"account_id\": \"ACC-8956\", \"company\": \"Hadley Industries\", \"tam\": \"Yuki Tanaka\", \"plan_tier\": \"Starter\", \"arr_usd\": 500000, \"seats_licensed\": 1690, \"seats_active\": 997, \"products\": [\"DataBridge Pro\", \"AnalyticsHub\", \"WorkflowEngine\", \"SecureVault\"], \"health_status\": \"At Risk\", \"usage_trend\": \"Increasing\", \"open_tickets\": 11, \"p1_tickets_last_30d\": 1, \"customer_since\": \"2024-07-21\", \"renewal_date\": \"2026-10-19\", \"last_qbr_date\": \"2025-12-02\", \"primary_contact\": {\"name\": \"Sam Okafor\", \"title\": \"VP Engineering\"}, \"escalation_notes\": [\"Customer expressed frustration with response times in last sync\", \"Procurement team requested pricing review\", \"Decision maker considering competing vendor evaluation\"], \"nps_score\": 5, \"last_login_days_ago\": 77, \"integrations_active\": [\"Salesforce\", \"Google Workspace\", \"Snowflake\", \"Azure AD\"], \"region\": \"APAC\", \"industry\": \"Energy\"}, \"support_tier\": \"Standard\", \"days_until_renewal\": 151, \"metrics_source\": \"Account snapshot only; monthly usage metrics unavailable\", \"escalation_notes\": [\"Customer expressed frustration with response times in last sync\", \"Procurement team requested pricing review\", \"Decision maker considering competing vendor evaluation\"]}",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "I have successfully retrieved the account context for Hadley Industries (ACC-8956), which confirms they have an active subscription to SecureVault. The account is marked 'At Risk' with escalation notes regarding response times and potential vendor evaluation, necessitating a prompt and empathetic response.",
+      "action": "finish",
+      "observation": "Output validation failed: Internal note must cite retrieved KB article IDs",
+      "outcome": "Rejected; correction required"
+    },
+    {
+      "thought": "I have successfully retrieved the account context for Hadley Industries (ACC-8956), which confirms they have an active subscription to SecureVault. The account is marked 'At Risk' with escalation notes regarding response times and potential vendor evaluation, necessitating a prompt and empathetic response.",
+      "action": "finish",
+      "observation": "Final output submitted",
+      "outcome": "Schema validated"
+    }
+  ]
+}

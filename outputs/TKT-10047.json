@@ -1,0 +1,56 @@
+{
+  "category": "Integration",
+  "priority": "P3",
+  "routing": "AnalyticsHub Support Engineering",
+  "escalation": false,
+  "tam_notification": false,
+  "duplicate_status": false,
+  "duplicate_of_ticket_id": null,
+  "clarification_needed": true,
+  "customer_reply": "Hi Casey, thanks for reaching out. I'm sorry to hear you're running into a CHECKSUM_MISMATCH error during your AnalyticsHub and Azure AD integration. Since this error isn't standard, could you please provide a few more details? Specifically, are you seeing this error in the AnalyticsHub logs or the Azure AD side? Additionally, if you have any screenshots or specific API request headers from the failed call, that would be very helpful for us to investigate this further.",
+  "internal_note": "Account ACC-2293 (Bluth Company, Starter tier, Renewal 2027-02-19) is not near renewal. No matching KB articles found for 'CHECKSUM_MISMATCH' after reviewing troubleshooting/performance-and-integrations, products/securevault, and products/cloudsync. No ticket history found for this account on this issue. Current account status 'New' with increasing usage. Escalation not required. Requesting diagnostic logs and headers to identify if the error stems from OAuth handshake or subsequent data transmission/integrity checks. Contact: Casey Brown (Director of Infrastructure). No active integrations currently listed in account snapshot, suggesting a new setup attempt. Routing to Support Engineering for deeper analysis of OAuth flow if user returns with logs. Follow-up action: await client response with debug artifacts.",
+  "reasoning_trace": [
+    {
+      "thought": "Investigating reported Azure AD integration error with AnalyticsHub.",
+      "action": "{\"tool\": \"search_kb\", \"input\": {\"query\": \"AnalyticsHub Azure AD integration error CHECKSUM_MISMATCH\"}}",
+      "observation": "[{\"article_id\": \"troubleshooting/performance-and-integrations\", \"title\": \"Troubleshooting: Performance Issues\", \"path\": \"troubleshooting/performance-and-integrations.md\", \"cross_references\": [], \"score\": 0.096, \"excerpt\": \"# Troubleshooting: Performance Issues\\n\\nThis guide covers performance degradation, timeouts, and slow response issues across all products.\\n\\n---\\n\\n## Error Reference\\n\\n| Error | Likely Cause | Resolution |\\n|-------|-------------|------------|\\n| `ERR_CONNECTION_TIMEOUT after 30s` | Network or source unreachable | Check firewall, VPN, and source availability |\\n| `PIPELINE_STALLED: no heartbeat for 15 minutes` | Pipeline worker crashed or source blocked | Restart pipeline; check source credentials |\\n| `RATE_LIMIT_EXCEEDED: retry after 60s` | API quota hit on source or destination | Reduce batch size or add retry backoff |\\n| `QUOTA_EXCEEDED: storage limit reached` | Plan storage limit hit | Archive old data or upgrade plan |\\n| `DEPENDENCY_UNAVAILABLE` | Downstream service unreachable | Check status page; retry after resolution |\\n\\n---\\n\\n## Diagnosing Slow Performance\\n\\n### Step 1 — Identify where the slowness is\\n\\n- **UI slow (all pages):** likely a client-side network issue or a platform-wide incident. Check the status page at `status.yourplatform.com`.\\n- **Specific page/feature slow:** usually a heavy query or a missing cache.\\n- **API slow:** check response headers for `X-Processing-Time`. I\"}, {\"article_id\": \"products/securevault\", \"title\": \"SecureVault — Product Reference\", \"path\": \"products/securevault.md\", \"cross_references\": [], \"score\": 0.0667, \"excerpt\": \"# SecureVault — Product Reference\\n\\n## Overview\\n\\nSecureVault is an enterprise secrets and key management platform. It provides centralised storage for API keys, credentials, certificates, and encryption keys, with audit logging, role-based access control, and integrations with major cloud providers and CI/CD pipelines.\\n\\n**Current stable version:** 2.6.0  \\n**Previous stable version:** 2.5.3\\n\\n---\\n\\n## Core Modules\\n\\n### Authentication\\n\\nSecureVault supports multiple authentication methods:\\n- **Username + password** with MFA (TOTP or hardware key)\\n- **SSO via SAML 2.0** (Okta, Azure AD, Google Workspace, Ping Identity)\\n- **Machine-to-machine:** service account tokens with scoped permissions\\n\\nToken expiry defaults: user tokens 8 hours, service tokens 90 days.  \\n`AUTH_TOKEN_EXPIRED` errors indicate the token has exceeded its TTL — re-authenticate or rotate the service token.\\n\\n### Encryption\\n\\nAll secrets are encrypted at rest using AES-256-GCM. In-transit encryption uses TLS 1.3 minimum.\\n\\n- Customer-managed keys (CMK) available on Business and Enterprise plans.\\n- Key rotation: automatic 90-day rotation (configurable). Manual rotation available anytime.\\n- Hardware Security Module (HSM) backin\"}, {\"article_id\": \"products/cloudsync\", \"title\": \"CloudSync — Product Reference\", \"path\": \"products/cloudsync.md\", \"cross_references\": [], \"score\": 0.0639, \"excerpt\": \"# CloudSync — Product Reference\\n\\n## Overview\\n\\nCloudSync is a real-time file and data synchronisation platform that keeps content consistent across cloud storage providers, on-premise systems, and end-user devices. It supports conflict resolution, selective sync, bandwidth throttling, and granular permission controls.\\n\\n**Current stable version:** 2.5.0  \\n**Previous stable version:** 2.4.1  \\n**Deprecated (EOL 2025-09-30):** 2.2.x and below\\n\\n---\\n\\n## Core Modules\\n\\n### File Sync\\n\\nBidirectional sync between configured endpoints. Supports Amazon S3, Azure Blob, Google Cloud Storage, on-premise NAS, and desktop clients (Windows, macOS).\\n\\n**Sync modes:**\\n- `realtime` — changes propagate within seconds (requires persistent connection)\\n- `scheduled` — sync runs on a cron schedule (minimum every 5 minutes)\\n- `manual` — sync triggered via API or UI action\\n\\n**Configuration options:**\\n- `include_patterns` — glob patterns for files to include (e.g., `**/*.csv`)\\n- `exclude_patterns` — glob patterns to exclude (e.g., `**/.DS_Store`, `**/node_modules`)\\n- `max_file_size_mb` — files above this limit are skipped (default: 500)\\n- `versioning` — keep last N versions per file (default: 10, max: 100)\\n\\n### C\"}]",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "I could not find information regarding CHECKSUM_MISMATCH for AnalyticsHub integration in the knowledge base. I will resolve the account and check ticket history for similar incidents.",
+      "action": "{\"tool\": \"resolve_account\", \"input\": {\"query_text\": \"Bluth Company\"}}",
+      "observation": "{\"status\": \"matched\", \"match\": {\"account_id\": \"ACC-2293\", \"name\": \"Bluth Company\", \"tier\": \"Starter\", \"renewal\": \"2027-02-19\", \"confidence\": 0.95, \"evidence\": [\"company_name\"]}, \"candidates\": [{\"account_id\": \"ACC-2293\", \"name\": \"Bluth Company\", \"tier\": \"Starter\", \"renewal\": \"2027-02-19\", \"confidence\": 0.95, \"evidence\": [\"company_name\"]}]}",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "Account identified as ACC-2293. Investigating ticket history for similar integration issues.",
+      "action": "{\"tool\": \"search_ticket_history\", \"input\": {\"account_id\": \"ACC-2293\", \"query_text\": \"CHECKSUM_MISMATCH\", \"limit\": 5}}",
+      "observation": "[]",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "No history or specific KB entries found for the checksum error; requesting more information from the user to debug the integration step.",
+      "action": "finish",
+      "observation": "Output validation failed: Fetch context for the resolved account before finishing",
+      "outcome": "Rejected; correction required"
+    },
+    {
+      "thought": "Account identified. Fetching account context as required before final assessment.",
+      "action": "{\"tool\": \"get_account_context\", \"input\": {\"account_id\": \"ACC-2293\"}}",
+      "observation": "{\"status\": \"matched\", \"account\": {\"account_id\": \"ACC-2293\", \"company\": \"Bluth Company\", \"tam\": \"Olivia Grant\", \"plan_tier\": \"Starter\", \"arr_usd\": 96000, \"seats_licensed\": 127, \"seats_active\": 74, \"products\": [\"WorkflowEngine\", \"DataBridge Pro\", \"AnalyticsHub\"], \"health_status\": \"New\", \"usage_trend\": \"Increasing\", \"open_tickets\": 6, \"p1_tickets_last_30d\": 0, \"customer_since\": \"2025-09-18\", \"renewal_date\": \"2027-02-19\", \"last_qbr_date\": \"2026-01-26\", \"primary_contact\": {\"name\": \"Casey Brown\", \"title\": \"Director of Infrastructure\"}, \"escalation_notes\": [], \"nps_score\": null, \"last_login_days_ago\": 14, \"integrations_active\": [], \"region\": \"APAC\", \"industry\": \"Energy\"}, \"support_tier\": \"Standard\", \"days_until_renewal\": 319, \"metrics_source\": \"Account snapshot only; monthly usage metrics unavailable\", \"escalation_notes\": []}",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "Account context retrieved. No active integrations found. Requesting further diagnostics from the customer to troubleshoot the reported checksum error.",
+      "action": "finish",
+      "observation": "Output validation failed: Internal note must cite retrieved KB article IDs",
+      "outcome": "Rejected; correction required"
+    },
+    {
+      "thought": "Account context retrieved. No active integrations found. Requesting further diagnostics from the customer to troubleshoot the reported checksum error.",
+      "action": "finish",
+      "observation": "Final output submitted",
+      "outcome": "Schema validated"
+    }
+  ]
+}

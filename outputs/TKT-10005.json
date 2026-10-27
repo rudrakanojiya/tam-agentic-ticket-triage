@@ -1,0 +1,62 @@
+{
+  "category": "Integration",
+  "priority": "P2",
+  "routing": "Technical Support - Identity & Access Management",
+  "escalation": true,
+  "tam_notification": true,
+  "duplicate_status": false,
+  "duplicate_of_ticket_id": null,
+  "clarification_needed": true,
+  "customer_reply": "I am truly sorry for the frustration this is causing your team, especially with 63 users currently unable to access AnalyticsHub. Given the impact, I have escalated this incident to our senior technical team for an immediate investigation. The 'ERR_CONNECTION_TIMEOUT' error suggests the authentication request is not successfully completing its handshake with our platform. Could you please confirm if any network configuration changes were implemented recently? Additionally, verify that the SSO endpoint URL in your HubSpot configuration matches the current requirement for your organization. I have also notified your Technical Account Manager, Fatima Al-Rashid, so we can ensure this is resolved as quickly as possible.",
+  "internal_note": "Ticket TKT-10005. Customer: Cybertronics Ltd (ACC-5396, Business Tier). Account health is 'At Risk' with 3 prior P1s in the last 30 days and recent negative sentiment. Escalating to Senior Support and notifying TAM (Fatima Al-Rashid) per protocol. SSO connectivity issue (ERR_CONNECTION_TIMEOUT) confirmed as P2 impact. KB 'troubleshooting/authentication-sso' reviewed. No duplicate tickets found in account history. Confirmed Business tier account status allows for advanced support pathways compared to the Starter tier originally assumed in the ticket metadata.",
+  "reasoning_trace": [
+    {
+      "thought": "Investigating SSO configuration issue reported by Cybertronics Ltd for AnalyticsHub.",
+      "action": "{\"tool\": \"get_account_context\", \"input\": {\"account_id\": \"ACC-1964\"}}",
+      "observation": "{\"status\": \"unresolved\", \"account_id\": \"ACC-1964\"}",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "Searching KB for SSO connection timeout issues.",
+      "action": "{\"tool\": \"search_kb\", \"input\": {\"query\": \"SSO ERR_CONNECTION_TIMEOUT HubSpot\", \"top_k\": 3}}",
+      "observation": "[{\"article_id\": \"troubleshooting/authentication-sso\", \"title\": \"Troubleshooting: Authentication & SSO\", \"path\": \"troubleshooting/authentication-sso.md\", \"cross_references\": [], \"score\": 0.0788, \"excerpt\": \"# Troubleshooting: Authentication & SSO\\n\\nThis guide covers the most common authentication and single sign-on issues across all products.\\n\\n---\\n\\n## Error Reference\\n\\n| Error Code | Product(s) | Meaning | First Action |\\n|------------|-----------|---------|-------------|\\n| `AUTH_TOKEN_EXPIRED` | All | Token TTL exceeded | Re-authenticate or rotate service token |\\n| `403 Forbidden: insufficient_scope` | All | Token lacks required permission scope | Review and update token scopes |\\n| `SAML_ASSERTION_EXPIRED` | SecureVault, CloudSync | Clock skew > 5 min between IDP and SP | Sync NTP on both systems |\\n| `AUDIENCE_MISMATCH` | SecureVault | Entity ID mismatch in SAML config | Correct Entity ID in IDP to match SP URL |\\n| `GROUP_NOT_MAPPED` | SecureVault, CloudSync | IDP group has no role mapping | Add group mapping in SSO settings |\\n| `SESSION_INVALID` | All | Concurrent session limit reached | Sign out other sessions or increase limit |\\n| `SSO_GROUP_NOT_FOUND` | CloudSync | Group name case mismatch | Verify exact group name including case |\\n\\n---\\n\\n## SSO Setup Checklist\\n\\nBefore opening a support ticket for SSO issues, confirm all of the following:\\n\\n- [ ] SAML metadata XML is current (not expi\"}, {\"article_id\": \"onboarding/onboarding-guide\", \"title\": \"Onboarding Guide — New Customers & Users\", \"path\": \"onboarding/onboarding-guide.md\", \"cross_references\": [\"../troubleshooting/authentication-sso.md\", \"../products/databridge-pro.md\", \"../products/cloudsync.md\", \"../products/analyticshub.md\", \"../products/securevault.md\", \"../products/workflowengine.md\"], \"score\": 0.0725, \"excerpt\": \"# Onboarding Guide — New Customers & Users\\n\\n## New Organisation Onboarding Checklist\\n\\nComplete these steps within the first 7 days to ensure a smooth rollout.\\n\\n### Step 1: Account setup (Day 1)\\n\\n- [ ] Verify the admin email and accept the invitation\\n- [ ] Set organisation name and region: Settings → Organisation → General\\n- [ ] Configure SSO if on Business/Enterprise plan: Settings → SSO (see [Authentication & SSO guide](../troubleshooting/authentication-sso.md))\\n- [ ] Set the default session timeout: Settings → Security → Session Timeout (recommended: 8 hours)\\n- [ ] Enable MFA requirement for all users: Settings → Security → Require MFA\\n\\n### Step 2: User provisioning (Days 1–3)\\n\\n**Option A — Bulk CSV import:**\\n1. Download the template: Settings → Users → Import → Download Template.\\n2. Fill in: email, first name, last name, role (`admin`, `editor`, `viewer`).\\n3. Upload and confirm. Invitation emails are sent automatically.\\n\\n**Option B — SSO auto-provisioning (Business/Enterprise):**\\n1. Configure your IDP to send SCIM provisioning events to the platform.\\n2. SCIM endpoint: `https://[product].yourdomain.com/scim/v2/`\\n3. Bearer token: generate at Settings → SSO → SCIM → Generate Token.\"}, {\"article_id\": \"products/securevault\", \"title\": \"SecureVault — Product Reference\", \"path\": \"products/securevault.md\", \"cross_references\": [], \"score\": 0.0643, \"excerpt\": \"# SecureVault — Product Reference\\n\\n## Overview\\n\\nSecureVault is an enterprise secrets and key management platform. It provides centralised storage for API keys, credentials, certificates, and encryption keys, with audit logging, role-based access control, and integrations with major cloud providers and CI/CD pipelines.\\n\\n**Current stable version:** 2.6.0  \\n**Previous stable version:** 2.5.3\\n\\n---\\n\\n## Core Modules\\n\\n### Authentication\\n\\nSecureVault supports multiple authentication methods:\\n- **Username + password** with MFA (TOTP or hardware key)\\n- **SSO via SAML 2.0** (Okta, Azure AD, Google Workspace, Ping Identity)\\n- **Machine-to-machine:** service account tokens with scoped permissions\\n\\nToken expiry defaults: user tokens 8 hours, service tokens 90 days.  \\n`AUTH_TOKEN_EXPIRED` errors indicate the token has exceeded its TTL — re-authenticate or rotate the service token.\\n\\n### Encryption\\n\\nAll secrets are encrypted at rest using AES-256-GCM. In-transit encryption uses TLS 1.3 minimum.\\n\\n- Customer-managed keys (CMK) available on Business and Enterprise plans.\\n- Key rotation: automatic 90-day rotation (configurable). Manual rotation available anytime.\\n- Hardware Security Module (HSM) backin\"}]",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "The user reports SSO connectivity issues for new users. KB analysis indicates SSO auto-provisioning is a Business/Enterprise feature, but the client is on a Starter plan. The error ERR_CONNECTION_TIMEOUT suggests a network or IDP configuration issue rather than an authentication error.",
+      "action": "finish",
+      "observation": "Output validation failed: Evidence missing; use tools before finishing: resolve_account, search_ticket_history",
+      "outcome": "Rejected; correction required"
+    },
+    {
+      "thought": "Resolving account information for Cybertronics Ltd to ensure proper context.",
+      "action": "{\"tool\": \"resolve_account\", \"input\": {\"query_text\": \"Cybertronics Ltd\"}}",
+      "observation": "{\"status\": \"matched\", \"match\": {\"account_id\": \"ACC-5396\", \"name\": \"Cybertronics Ltd\", \"tier\": \"Business\", \"renewal\": \"2026-08-31\", \"confidence\": 0.95, \"evidence\": [\"company_name\"]}, \"candidates\": [{\"account_id\": \"ACC-5396\", \"name\": \"Cybertronics Ltd\", \"tier\": \"Business\", \"renewal\": \"2026-08-31\", \"confidence\": 0.95, \"evidence\": [\"company_name\"]}]}",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "Account resolved to ACC-5396. Checking ticket history for existing issues related to SSO.",
+      "action": "{\"tool\": \"search_ticket_history\", \"input\": {\"account_id\": \"ACC-5396\", \"query_text\": \"SSO\", \"limit\": 5}}",
+      "observation": "[]",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "Account identified as Business tier, renewal in 3 months. No prior SSO tickets found. Initiating resolution for SSO connection timeout.",
+      "action": "finish",
+      "observation": "Output validation failed: Fetch context for the resolved account before finishing",
+      "outcome": "Rejected; correction required"
+    },
+    {
+      "thought": "Fetching account context for the resolved account to finalize triage.",
+      "action": "{\"tool\": \"get_account_context\", \"input\": {\"account_id\": \"ACC-5396\"}}",
+      "observation": "{\"status\": \"matched\", \"account\": {\"account_id\": \"ACC-5396\", \"company\": \"Cybertronics Ltd\", \"tam\": \"Fatima Al-Rashid\", \"plan_tier\": \"Business\", \"arr_usd\": 240000, \"seats_licensed\": 390, \"seats_active\": 358, \"products\": [\"CloudSync\", \"SecureVault\", \"WorkflowEngine\"], \"health_status\": \"At Risk\", \"usage_trend\": \"Stable\", \"open_tickets\": 10, \"p1_tickets_last_30d\": 2, \"customer_since\": \"2024-09-22\", \"renewal_date\": \"2026-08-31\", \"last_qbr_date\": \"2026-04-08\", \"primary_contact\": {\"name\": \"Jordan Park\", \"title\": \"VP Technology\"}, \"escalation_notes\": [\"3 consecutive P1 tickets in the last 30 days\", \"Negative sentiment detected in recent support tickets\", \"Champion left the company — no replacement identified yet\"], \"nps_score\": null, \"last_login_days_ago\": 43, \"integrations_active\": [\"Jira\", \"Snowflake\", \"Slack\"], \"region\": \"EU-West\", \"industry\": \"Retail\"}, \"support_tier\": \"Standard\", \"days_until_renewal\": 109, \"metrics_source\": \"Account snapshot only; monthly usage metrics unavailable\", \"escalation_notes\": [\"3 consecutive P1 tickets in the last 30 days\", \"Negative sentiment detected in recent support tickets\", \"Champion left the company — no replacement identified yet\"]}",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "Account context fetched successfully. Escalating P2 SSO issue due to 'At Risk' health status, recent P1 history, and negative sentiment.",
+      "action": "finish",
+      "observation": "Final output submitted",
+      "outcome": "Schema validated"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "category": "Performance",
+  "priority": "P2",
+  "routing": "Technical Support - DataBridge Pro Team",
+  "escalation": true,
+  "tam_notification": true,
+  "duplicate_status": false,
+  "duplicate_of_ticket_id": null,
+  "clarification_needed": true,
+  "customer_reply": "Hi there, I am sorry to hear about the performance degradation you are experiencing in DataBridge Pro. To help us investigate this further, could you please provide a few examples of the API response headers, specifically the 'X-Processing-Time' value? Additionally, are you seeing any specific error messages (such as connection timeouts) during these 119+ second API operations? This information will help us determine if the issue is originating from the platform or the data source itself.",
+  "internal_note": "Ticket reports severe latency (119+ seconds) in DataBridge Pro. Account ACC-7397 (Starter tier) is 'At Risk', with 3 consecutive P1 tickets in the last 30 days and 71 days until renewal. KB article 'troubleshooting/performance-and-integrations' suggests checking 'X-Processing-Time' headers. Escalating to TAM Yuki Tanaka due to negative sentiment and recent P1 history. No prior performance tickets found.",
+  "reasoning_trace": [
+    {
+      "thought": "Resolving account information to verify impact and check for known incidents.",
+      "action": "{\"tool\": \"resolve_account\", \"input\": {\"query_text\": \"Gavin Belson Co\"}}",
+      "observation": "{\"status\": \"matched\", \"match\": {\"account_id\": \"ACC-7397\", \"name\": \"Gavin Belson Co\", \"tier\": \"Starter\", \"renewal\": \"2026-07-30\", \"confidence\": 0.95, \"evidence\": [\"company_name\"]}, \"candidates\": [{\"account_id\": \"ACC-7397\", \"name\": \"Gavin Belson Co\", \"tier\": \"Starter\", \"renewal\": \"2026-07-30\", \"confidence\": 0.95, \"evidence\": [\"company_name\"]}]}",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "The customer is reporting significant performance issues with DataBridge Pro affecting 198 users in EU-West, indicating a P2 impact. The account is identified as Starter, not Business as claimed in the ticket, and renewal is upcoming. I will now check for known performance incidents in the region.",
+      "action": "{\"tool\": \"search_kb\", \"input\": {\"query\": \"DataBridge Pro EU-West performance degradation\"}}",
+      "observation": "[{\"article_id\": \"troubleshooting/performance-and-integrations\", \"title\": \"Troubleshooting: Performance Issues\", \"path\": \"troubleshooting/performance-and-integrations.md\", \"cross_references\": [], \"score\": 0.1954, \"excerpt\": \"# Troubleshooting: Performance Issues\\n\\nThis guide covers performance degradation, timeouts, and slow response issues across all products.\\n\\n---\\n\\n## Error Reference\\n\\n| Error | Likely Cause | Resolution |\\n|-------|-------------|------------|\\n| `ERR_CONNECTION_TIMEOUT after 30s` | Network or source unreachable | Check firewall, VPN, and source availability |\\n| `PIPELINE_STALLED: no heartbeat for 15 minutes` | Pipeline worker crashed or source blocked | Restart pipeline; check source credentials |\\n| `RATE_LIMIT_EXCEEDED: retry after 60s` | API quota hit on source or destination | Reduce batch size or add retry backoff |\\n| `QUOTA_EXCEEDED: storage limit reached` | Plan storage limit hit | Archive old data or upgrade plan |\\n| `DEPENDENCY_UNAVAILABLE` | Downstream service unreachable | Check status page; retry after resolution |\\n\\n---\\n\\n## Diagnosing Slow Performance\\n\\n### Step 1 — Identify where the slowness is\\n\\n- **UI slow (all pages):** likely a client-side network issue or a platform-wide incident. Check the status page at `status.yourplatform.com`.\\n- **Specific page/feature slow:** usually a heavy query or a missing cache.\\n- **API slow:** check response headers for `X-Processing-Time`. I\"}, {\"article_id\": \"products/databridge-pro\", \"title\": \"DataBridge Pro — Product Reference\", \"path\": \"products/databridge-pro.md\", \"cross_references\": [], \"score\": 0.0609, \"excerpt\": \"# DataBridge Pro — Product Reference\\n\\n## Overview\\n\\nDataBridge Pro is a managed data integration platform that enables organisations to ingest, transform, and route data between internal systems and third-party services. It supports batch and streaming pipelines, schema validation, and a connector marketplace with 80+ pre-built integrations.\\n\\n**Current stable version:** 3.1.2  \\n**Previous stable version:** 2.6.0  \\n**Deprecated (EOL 2025-12-31):** 2.3.x and below\\n\\n---\\n\\n## Core Modules\\n\\n### Data Ingestion\\n\\nHandles raw data intake from sources including REST APIs, databases, file uploads (CSV, JSON, Parquet), and message queues (Kafka, SQS).\\n\\n**Key configuration fields:**\\n- `source_type` — one of `rest_api`, `database`, `file`, `queue`\\n- `batch_size` — records per batch (default: 1000, max: 50000)\\n- `retry_policy` — `none`, `linear`, or `exponential` (recommended: `exponential`)\\n- `schema_enforcement` — `strict`, `loose`, or `off`\\n\\n**Common errors:**\\n- `ERR_CONNECTION_TIMEOUT` — Source unreachable. Check network rules and firewall allowlist.\\n- `SCHEMA_MISMATCH` — Incoming record does not match registered schema. Review schema version in Schema Management.\\n- `RATE_LIMIT_EXCEEDED` — Sour\"}, {\"article_id\": \"troubleshooting/authentication-sso\", \"title\": \"Troubleshooting: Authentication & SSO\", \"path\": \"troubleshooting/authentication-sso.md\", \"cross_references\": [], \"score\": 0.0307, \"excerpt\": \"# Troubleshooting: Authentication & SSO\\n\\nThis guide covers the most common authentication and single sign-on issues across all products.\\n\\n---\\n\\n## Error Reference\\n\\n| Error Code | Product(s) | Meaning | First Action |\\n|------------|-----------|---------|-------------|\\n| `AUTH_TOKEN_EXPIRED` | All | Token TTL exceeded | Re-authenticate or rotate service token |\\n| `403 Forbidden: insufficient_scope` | All | Token lacks required permission scope | Review and update token scopes |\\n| `SAML_ASSERTION_EXPIRED` | SecureVault, CloudSync | Clock skew > 5 min between IDP and SP | Sync NTP on both systems |\\n| `AUDIENCE_MISMATCH` | SecureVault | Entity ID mismatch in SAML config | Correct Entity ID in IDP to match SP URL |\\n| `GROUP_NOT_MAPPED` | SecureVault, CloudSync | IDP group has no role mapping | Add group mapping in SSO settings |\\n| `SESSION_INVALID` | All | Concurrent session limit reached | Sign out other sessions or increase limit |\\n| `SSO_GROUP_NOT_FOUND` | CloudSync | Group name case mismatch | Verify exact group name including case |\\n\\n---\\n\\n## SSO Setup Checklist\\n\\nBefore opening a support ticket for SSO issues, confirm all of the following:\\n\\n- [ ] SAML metadata XML is current (not expi\"}]",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "The customer is experiencing API timeouts and extreme latency. Based on the troubleshooting guide, these symptoms suggest either a source connection issue or a platform-wide performance degradation. I will finish by categorizing this as a performance issue and requesting the necessary diagnostic headers from the customer.",
+      "action": "finish",
+      "observation": "Output validation failed: Evidence missing; use tools before finishing: search_ticket_history",
+      "outcome": "Rejected; correction required"
+    },
+    {
+      "thought": "Checking ticket history to identify any previous reports of performance issues for this account.",
+      "action": "{\"tool\": \"search_ticket_history\", \"input\": {\"account_id\": \"ACC-7397\", \"query_text\": \"performance DataBridge Pro\", \"limit\": 5}}",
+      "observation": "[]",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "No historical tickets found for this account related to performance issues. Proceeding to finish with a request for diagnostics.",
+      "action": "finish",
+      "observation": "Output validation failed: Fetch context for the resolved account before finishing",
+      "outcome": "Rejected; correction required"
+    },
+    {
+      "thought": "Retrieving account context to verify plan details and potential impact.",
+      "action": "{\"tool\": \"get_account_context\", \"input\": {\"account_id\": \"ACC-7397\"}}",
+      "observation": "{\"status\": \"matched\", \"account\": {\"account_id\": \"ACC-7397\", \"company\": \"Gavin Belson Co\", \"tam\": \"Yuki Tanaka\", \"plan_tier\": \"Starter\", \"arr_usd\": 96000, \"seats_licensed\": 1483, \"seats_active\": 1355, \"products\": [\"CloudSync\", \"WorkflowEngine\", \"DataBridge Pro\", \"SecureVault\"], \"health_status\": \"At Risk\", \"usage_trend\": \"Stable\", \"open_tickets\": 9, \"p1_tickets_last_30d\": 2, \"customer_since\": \"2025-08-14\", \"renewal_date\": \"2026-07-30\", \"last_qbr_date\": \"2026-01-06\", \"primary_contact\": {\"name\": \"Avery Martinez\", \"title\": \"Platform Lead\"}, \"escalation_notes\": [\"Negative sentiment detected in recent support tickets\", \"3 consecutive P1 tickets in the last 30 days\"], \"nps_score\": null, \"last_login_days_ago\": 19, \"integrations_active\": [\"BigQuery\"], \"region\": \"US-Central\", \"industry\": \"Energy\"}, \"support_tier\": \"Standard\", \"days_until_renewal\": 71, \"metrics_source\": \"Account snapshot only; monthly usage metrics unavailable\", \"escalation_notes\": [\"Negative sentiment detected in recent support tickets\", \"3 consecutive P1 tickets in the last 30 days\"]}",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "Retrieved account context for ACC-7397. Escalating ticket due to 'At Risk' status and 3 recent P1 tickets in the last 30 days.",
+      "action": "finish",
+      "observation": "Final output submitted",
+      "outcome": "Schema validated"
+    }
+  ]
+}

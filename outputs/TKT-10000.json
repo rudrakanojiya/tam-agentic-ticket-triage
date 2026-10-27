@@ -1,0 +1,74 @@
+{
+  "category": "Feature Request",
+  "priority": "P3",
+  "routing": "Product Engineering",
+  "escalation": false,
+  "tam_notification": false,
+  "duplicate_status": false,
+  "duplicate_of_ticket_id": null,
+  "clarification_needed": false,
+  "customer_reply": "Thank you for reaching out to us. I understand that managing entries one-by-one in DataBridge Pro is becoming challenging as your team grows. I have documented this as a feature request for our Product team to review for future updates. While I cannot provide a specific timeline for when this might be implemented, your feedback is valuable for helping us prioritize improvements. In the meantime, please let me know if there are other areas where we can assist you with your data ingestion workflows.",
+  "internal_note": "Request for bulk archival functionality in DataBridge Pro (TKT-10000). Account ACC-1881 (Starter) is marked as 'At Risk' with negative sentiment. Feature requested; no bug identified. Priority P3 assigned as a workaround currently exists. Search history returned no duplicates. KB articles referenced: 'products/databridge-pro' (product overview), 'troubleshooting/performance-and-integrations' (performance context). Account context verified: ACC-1881, Standard support, 370 days until renewal.",
+  "reasoning_trace": [
+    {
+      "thought": "Model response could not be parsed",
+      "action": "invalid_response",
+      "observation": "Invalid or truncated JSON response",
+      "outcome": "Retry requested"
+    },
+    {
+      "thought": "Identify the account and verify plan details to confirm product capability.",
+      "action": "{\"tool\": \"get_account_context\", \"input\": {\"account_id\": \"ACC-2535\"}}",
+      "observation": "{\"status\": \"unresolved\", \"account_id\": \"ACC-2535\"}",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "Account context was not returned; verifying identity via resolve_account.",
+      "action": "{\"tool\": \"resolve_account\", \"input\": {\"query_text\": \"Massive Dynamic\"}}",
+      "observation": "{\"status\": \"matched\", \"match\": {\"account_id\": \"ACC-1881\", \"name\": \"Massive Dynamic\", \"tier\": \"Starter\", \"renewal\": \"2027-03-01\", \"confidence\": 0.95, \"evidence\": [\"company_name\"]}, \"candidates\": [{\"account_id\": \"ACC-1881\", \"name\": \"Massive Dynamic\", \"tier\": \"Starter\", \"renewal\": \"2027-03-01\", \"confidence\": 0.95, \"evidence\": [\"company_name\"]}]}",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "The request is a feature request for bulk operations in DataBridge Pro. Priority is assessed as P3 (moderate impact/workaround exists).",
+      "action": "finish",
+      "observation": "Output validation failed: Evidence missing; use tools before finishing: search_ticket_history",
+      "outcome": "Rejected; correction required"
+    },
+    {
+      "thought": "Searching ticket history for duplicate feature requests for account ACC-1881.",
+      "action": "{\"tool\": \"search_ticket_history\", \"input\": {\"account_id\": \"ACC-1881\", \"query_text\": \"bulk archive DataBridge Pro\", \"limit\": 5}}",
+      "observation": "[]",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "No duplicate tickets found in history for ACC-1881; finalizing feature request.",
+      "action": "finish",
+      "observation": "Output validation failed: Retrieve KB evidence and cite relevant article IDs in internal_note",
+      "outcome": "Rejected; correction required"
+    },
+    {
+      "thought": "Searching KB for bulk archive functionality policies.",
+      "action": "{\"tool\": \"search_kb\", \"input\": {\"query\": \"DataBridge Pro bulk archive\", \"top_k\": 3}}",
+      "observation": "[{\"article_id\": \"troubleshooting/performance-and-integrations\", \"title\": \"Troubleshooting: Performance Issues\", \"path\": \"troubleshooting/performance-and-integrations.md\", \"cross_references\": [], \"score\": 0.0865, \"excerpt\": \"# Troubleshooting: Performance Issues\\n\\nThis guide covers performance degradation, timeouts, and slow response issues across all products.\\n\\n---\\n\\n## Error Reference\\n\\n| Error | Likely Cause | Resolution |\\n|-------|-------------|------------|\\n| `ERR_CONNECTION_TIMEOUT after 30s` | Network or source unreachable | Check firewall, VPN, and source availability |\\n| `PIPELINE_STALLED: no heartbeat for 15 minutes` | Pipeline worker crashed or source blocked | Restart pipeline; check source credentials |\\n| `RATE_LIMIT_EXCEEDED: retry after 60s` | API quota hit on source or destination | Reduce batch size or add retry backoff |\\n| `QUOTA_EXCEEDED: storage limit reached` | Plan storage limit hit | Archive old data or upgrade plan |\\n| `DEPENDENCY_UNAVAILABLE` | Downstream service unreachable | Check status page; retry after resolution |\\n\\n---\\n\\n## Diagnosing Slow Performance\\n\\n### Step 1 — Identify where the slowness is\\n\\n- **UI slow (all pages):** likely a client-side network issue or a platform-wide incident. Check the status page at `status.yourplatform.com`.\\n- **Specific page/feature slow:** usually a heavy query or a missing cache.\\n- **API slow:** check response headers for `X-Processing-Time`. I\"}, {\"article_id\": \"products/databridge-pro\", \"title\": \"DataBridge Pro — Product Reference\", \"path\": \"products/databridge-pro.md\", \"cross_references\": [], \"score\": 0.0835, \"excerpt\": \"# DataBridge Pro — Product Reference\\n\\n## Overview\\n\\nDataBridge Pro is a managed data integration platform that enables organisations to ingest, transform, and route data between internal systems and third-party services. It supports batch and streaming pipelines, schema validation, and a connector marketplace with 80+ pre-built integrations.\\n\\n**Current stable version:** 3.1.2  \\n**Previous stable version:** 2.6.0  \\n**Deprecated (EOL 2025-12-31):** 2.3.x and below\\n\\n---\\n\\n## Core Modules\\n\\n### Data Ingestion\\n\\nHandles raw data intake from sources including REST APIs, databases, file uploads (CSV, JSON, Parquet), and message queues (Kafka, SQS).\\n\\n**Key configuration fields:**\\n- `source_type` — one of `rest_api`, `database`, `file`, `queue`\\n- `batch_size` — records per batch (default: 1000, max: 50000)\\n- `retry_policy` — `none`, `linear`, or `exponential` (recommended: `exponential`)\\n- `schema_enforcement` — `strict`, `loose`, or `off`\\n\\n**Common errors:**\\n- `ERR_CONNECTION_TIMEOUT` — Source unreachable. Check network rules and firewall allowlist.\\n- `SCHEMA_MISMATCH` — Incoming record does not match registered schema. Review schema version in Schema Management.\\n- `RATE_LIMIT_EXCEEDED` — Sour\"}, {\"article_id\": \"onboarding/onboarding-guide\", \"title\": \"Onboarding Guide — New Customers & Users\", \"path\": \"onboarding/onboarding-guide.md\", \"cross_references\": [\"../troubleshooting/authentication-sso.md\", \"../products/databridge-pro.md\", \"../products/cloudsync.md\", \"../products/analyticshub.md\", \"../products/securevault.md\", \"../products/workflowengine.md\"], \"score\": 0.0674, \"excerpt\": \"# Onboarding Guide — New Customers & Users\\n\\n## New Organisation Onboarding Checklist\\n\\nComplete these steps within the first 7 days to ensure a smooth rollout.\\n\\n### Step 1: Account setup (Day 1)\\n\\n- [ ] Verify the admin email and accept the invitation\\n- [ ] Set organisation name and region: Settings → Organisation → General\\n- [ ] Configure SSO if on Business/Enterprise plan: Settings → SSO (see [Authentication & SSO guide](../troubleshooting/authentication-sso.md))\\n- [ ] Set the default session timeout: Settings → Security → Session Timeout (recommended: 8 hours)\\n- [ ] Enable MFA requirement for all users: Settings → Security → Require MFA\\n\\n### Step 2: User provisioning (Days 1–3)\\n\\n**Option A — Bulk CSV import:**\\n1. Download the template: Settings → Users → Import → Download Template.\\n2. Fill in: email, first name, last name, role (`admin`, `editor`, `viewer`).\\n3. Upload and confirm. Invitation emails are sent automatically.\\n\\n**Option B — SSO auto-provisioning (Business/Enterprise):**\\n1. Configure your IDP to send SCIM provisioning events to the platform.\\n2. SCIM endpoint: `https://[product].yourdomain.com/scim/v2/`\\n3. Bearer token: generate at Settings → SSO → SCIM → Generate Token.\"}]",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "Verified account, confirmed feature request, checked for duplicates, and reviewed relevant KB documentation. Finalizing as P3 feature request.",
+      "action": "finish",
+      "observation": "Output validation failed: Fetch context for the resolved account before finishing",
+      "outcome": "Rejected; correction required"
+    },
+    {
+      "thought": "Retrieving context for account ACC-1881 before finalizing.",
+      "action": "{\"tool\": \"get_account_context\", \"input\": {\"account_id\": \"ACC-1881\"}}",
+      "observation": "{\"status\": \"matched\", \"account\": {\"account_id\": \"ACC-1881\", \"company\": \"Massive Dynamic\", \"tam\": \"Fatima Al-Rashid\", \"plan_tier\": \"Starter\", \"arr_usd\": 12000, \"seats_licensed\": 350, \"seats_active\": 321, \"products\": [\"DataBridge Pro\", \"AnalyticsHub\", \"SecureVault\", \"WorkflowEngine\"], \"health_status\": \"At Risk\", \"usage_trend\": \"Inactive\", \"open_tickets\": 11, \"p1_tickets_last_30d\": 2, \"customer_since\": \"2025-01-17\", \"renewal_date\": \"2027-03-01\", \"last_qbr_date\": \"2026-01-19\", \"primary_contact\": {\"name\": \"Alex Morgan\", \"title\": \"Platform Lead\"}, \"escalation_notes\": [\"Negative sentiment detected in recent support tickets\"], \"nps_score\": null, \"last_login_days_ago\": 16, \"integrations_active\": [\"AWS S3\", \"Zendesk\"], \"region\": \"US-East\", \"industry\": \"Media\"}, \"support_tier\": \"Standard\", \"days_until_renewal\": 370, \"metrics_source\": \"Account snapshot only; monthly usage metrics unavailable\", \"escalation_notes\": [\"Negative sentiment detected in recent support tickets\"]}",
+      "outcome": "Tool completed"
+    },
+    {
+      "thought": "Retrieved account context for ACC-1881; confirmed feature request as P3 and internal status as At Risk.",
+      "action": "finish",
+      "observation": "Final output submitted",
+      "outcome": "Schema validated"
+    }
+  ]
+}
