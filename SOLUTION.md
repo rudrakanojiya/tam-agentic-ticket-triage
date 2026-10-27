@@ -1,35 +1,71 @@
-# TAM Intern Task: Agentic Ticket Triage - Solution
+# TAM Ticket Triage — Solution
 
-## 1. Architecture & Design
-The system uses a dynamic ReAct (Reason + Act) loop powered by the Gemini API (`gemini-3.1-flash-lite`). Instead of a rigid pipeline, the agent independently chooses when to use four custom tools:
-* `resolve_account`: Resolves missing/unmatched IDs via fuzzy domain and name matching.
-* `get_account_context`: Pulls tier, renewal dates, and open escalations.
-* `search_ticket_history`: Checks for duplicate submissions.
-* `search_kb` / `get_kb_article`: Retrieves technical fixes.
-Strict guardrails prevent the agent from finishing prematurely before completing identity, history, and KB checks.
+## 1. Design
+The system uses Gemini (`gemini-3.1-flash-lite`) in a bounded,
+model-directed tool loop. The model chooses its next lookup, reads the
+result, and decides whether to gather more evidence or finish.
 
-## 2. Evaluation & Validation Results
-* **Schema Compliance:** 10/10 review tickets successfully generated outputs that strictly match the Pydantic schema.
-* **Test Coverage:** 14/14 offline unit tests passed, covering tool execution and fallback logic.
-* **Tool Execution:** Trace logs confirm the agent successfully performs real multi-step lookups rather than hallucinating answers.
-* **Resilience:** Implemented rate-limit retry handling to gracefully recover from HTTP 429 errors during batch processing.
+Five read-only tools provide account resolution, account context,
+ticket-history search, KB search, and full-article retrieval.
+Account resolution uses explicit ID, company-name, contact-name, and
+available email-domain evidence. History and KB retrieval use TF-IDF;
+history excludes the current ticket and future submissions.
 
-## 3. Scaling Strategy at 10x Volume
-To handle 5,000+ tickets, the current sequential processing would bottleneck. The scaling plan includes:
-* **Asynchronous Execution:** Transitioning the tool calls and API requests to `asyncio` to process multiple tickets concurrently.
-* **Caching Layer:** Implementing Redis for KB articles and Account Context to prevent redundant database lookups.
-* **Vector Database:** Moving from basic TF-IDF to a dedicated vector store (e.g., Pinecone/Milvus) for faster, more accurate semantic searches across historical tickets.
+Finish checks require identity, history, and KB evidence, account
+context for resolved identities, and relevant KB citations. P1/P2 cases
+in Business/Enterprise accounts or within 90 days of renewal require
+escalation and TAM notification. Pydantic validates the final output.
+Traces record concise decision summaries, actual tool inputs/results,
+and rejected finish attempts. Invalid JSON and output validation failures
+have bounded correction paths; API rate limits and timeouts have retries.
 
-## 4. System Limitations & Edge Cases
-* **Fuzzy Matching Limits:** If a customer submits a ticket from a personal email (e.g., Gmail) and doesn't mention their company, `resolve_account` will fail to match them to an Enterprise account.
-* **Rate Limiting:** Heavy ReAct traces require multiple API calls per ticket, making the system susceptible to LLM provider rate limits without strict backoff handling.
+## 2. Evaluation
+Completed checks: 14 offline tests pass; all 10 generated review outputs
+pass schema validation. These results do not establish decision accuracy.
 
-## 5. Instructions on How to Run
-1. Clone the repository and install requirements: `pip install -r requirements.txt`
-2. Set your environment variables:
-   * `export GEMINI_API_KEY="your_api_key"`
-   * `export TAM_API_KEY="your_tam_key"`
-3. Run the evaluation set:
-   `python run.py --set review`
-4. Verify the outputs (they will generate in the `outputs/` folder):
-   `python scripts/check_outputs.py`
+Before production, I would:
+- Compare category and priority against human-reviewed labels.
+- Measure account-resolution precision and ambiguity handling.
+- Measure duplicate precision and recall using verified pairs.
+- Audit escalation and TAM notifications against agreed policy.
+- Review KB grounding, unsupported claims, and customer-reply information leaks.
+- Track latency, API cost, tool failures, and completion rate.
+
+## 3. Scale at 10x
+For 30,000 tickets and 4,000 articles, persist inverted indexes and
+partition history by verified account to reduce search latency. Retrieve
+KB sections with heading/version metadata rather than full articles.
+Cache stable content, bound context and tool budgets, and use limited
+concurrency that respects API quotas to control latency and cost.
+Benchmark hybrid keyword/vector retrieval and reranking against labeled
+queries before adopting them; a vector database alone does not guarantee
+better retrieval quality.
+
+## 4. Limitations
+The supplied assets contain 500 tickets, 50 accounts, and nine KB articles.
+Most raw account IDs are unmatched; ambiguous identities remain explicit.
+Email/domain fields, monthly usage history, and a complete incident-priority
+policy were unavailable. Priority interpretation and the 90-day renewal
+window are implementation assumptions, not supplied company policy.
+
+The brief's original schema and review set were absent, so local versions
+were created; compatibility with an unavailable official contract is
+unverified. Structural validation cannot guarantee correct diagnosis,
+polite replies, or absence of internal leaks. Human review remains necessary.
+
+## 5. How to Run
+Create and activate a Python virtual environment, then run:
+`python -m pip install -r requirements.txt`
+
+Set `GEMINI_API_KEY` securely in the process environment. The defaults are
+`TAM_LLM_PROVIDER=gemini` and `TAM_MODEL=gemini-3.1-flash-lite`.
+`TAM_API_KEY` is an optional fallback; `.env` is not loaded automatically.
+
+Run:
+- `python -m unittest discover -s tests -v`
+- `python run.py --ticket TKT-10000`
+- `python run.py --set review`
+- `python scripts/check_outputs.py`
+
+Results are saved in `outputs/<ticket_id>.json`; execution metadata appends
+to `outputs/run_log.jsonl`. Retry individual failures with `--ticket`.
