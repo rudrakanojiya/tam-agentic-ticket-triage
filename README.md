@@ -1,119 +1,212 @@
-# US Delivery Internship — Starter Dataset
+# TAM Agentic Ticket Triage
 
-This repository contains the mock dataset for the **US Delivery Internship Technical Task Round**.  
-Candidates should use this data exclusively for their submissions.
+An AI-assisted support-ticket triage system built for the TAM internship assessment.
 
----
+The system uses Google Gemini to select tools, gather customer and technical context, and produce a structured triage recommendation. Python executes the tools and validates the final output.
 
-## Repository Structure
+## What It Does
 
+For each ticket, the agent:
+
+- Resolves the customer account using available identity evidence.
+- Retrieves account tier, renewal timing, usage snapshots, and escalation notes.
+- Searches previous tickets for recurring issues or potential duplicates.
+- Retrieves relevant knowledge-base documentation.
+- Recommends category, priority, routing, escalation, and TAM notification.
+- Drafts a customer reply and an internal note.
+- Records tool inputs, observations, and concise decision summaries.
+
+The model chooses the lookup order. Finish-time checks reject answers that lack required evidence or fail validation.
+
+## Workflow
+
+```text
+Ticket
+  → Gemini selects a tool
+  → Python executes the tool
+  → Gemini reviews the observation
+  → Additional lookup or final decision
+  → Evidence checks and schema validation
+  → Output JSON and execution log
 ```
+
+## Project Structure
+
+```text
 starter-repo/
 ├── data/
-│   ├── tickets.json          # 500 synthetic support tickets
-│   └── accounts.json         # 50 synthetic customer account summaries
+│   ├── tickets.json
+│   ├── accounts.json
+│   └── review_set.txt
 ├── knowledge-base/
 │   ├── products/
-│   │   ├── databridge-pro.md
-│   │   ├── cloudsync.md
-│   │   ├── analyticshub.md
-│   │   ├── securevault.md
-│   │   └── workflowengine.md
 │   ├── troubleshooting/
-│   │   ├── authentication-sso.md
-│   │   └── performance-and-integrations.md
 │   ├── billing/
-│   │   └── billing-and-plans.md
 │   └── onboarding/
-│       └── onboarding-guide.md
-└── DATA_SCHEMA.md            # Field-level schema documentation
+├── tam_agent/
+│   ├── agent.py          # Model-directed tool loop and finish checks
+│   ├── tools.py          # Account lookup and TF-IDF retrieval
+│   ├── llm.py            # Model API clients and retry handling
+│   ├── schema.py         # Strict Pydantic output contract
+│   ├── data.py           # JSON loaders
+│   └── kb.py             # Markdown loader
+├── scripts/
+│   └── check_outputs.py
+├── tests/
+├── outputs/
+├── run.py
+├── requirements.txt
+├── DATA_SCHEMA.md
+└── SOLUTION.md
 ```
 
----
+## Agent Tools
 
-## Data Description
+| Tool | Purpose |
+|---|---|
+| `resolve_account` | Match explicit account ID, company, contact, or available email-domain evidence |
+| `get_account_context` | Retrieve account metadata, renewal timing, metrics, and escalation notes |
+| `search_ticket_history` | Rank similar historical tickets using TF-IDF |
+| `search_kb` | Retrieve relevant Markdown articles using TF-IDF |
+| `get_kb_article` | Read a complete article or follow a reference |
 
-### `data/tickets.json`
+History searches exclude the current ticket and future submissions. Ambiguous account matches remain explicit.
 
-500 synthetic support tickets submitted by fictitious enterprise customers. Each ticket represents a realistic interaction between a customer and the technical support team.
+## Dataset
 
-**Key fields:**
+The supplied assets contain:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `ticket_id` | string | Unique ticket identifier (e.g., `TKT-10042`) |
-| `account_id` | string | Links to an account in `accounts.json` |
-| `company` | string | Customer company name |
-| `subject` | string | Ticket subject line |
-| `body` | string | Full ticket body text |
-| `product` | string | Product the ticket relates to |
-| `product_area` | string | Module within the product |
-| `category` | string | Issue type: Bug, Feature Request, How-To, Performance, Billing, Integration, Onboarding, Data Loss |
-| `urgency` | string | P1 (critical) to P4 (low) |
-| `status` | string | Open, In Progress, Pending Customer, Resolved, Closed |
-| `plan_tier` | string | Starter, Professional, Business, Enterprise |
-| `assigned_agent` | string | Support agent name |
-| `created_at` | ISO 8601 | Ticket creation timestamp |
-| `updated_at` | ISO 8601 | Last update timestamp |
-| `tags` | array | Free-form tags |
-| `channel` | string | Submission channel: email, portal, chat, phone |
-| `satisfaction_score` | int\|null | CSAT score 1–5, or null if not submitted |
+- **500** synthetic support tickets.
+- **50** synthetic account summaries.
+- **9** Markdown knowledge-base articles.
+- A locally selected review set of **10** real ticket IDs.
 
-See [DATA_SCHEMA.md](DATA_SCHEMA.md) for full schema with examples.
+Most raw ticket account IDs do not match the accounts table. Some category and urgency labels are inconsistent with the ticket descriptions.
 
----
+Monthly usage metrics were not supplied. Account-level snapshots are used where available.
 
-### `data/accounts.json`
+See [DATA_SCHEMA.md](DATA_SCHEMA.md) for field definitions.
 
-50 synthetic customer account summaries, each representing a fictional enterprise customer's relationship with the platform.
+## Setup
 
-**Key fields:**
+Python 3.12 is recommended.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `account_id` | string | Unique account identifier |
-| `company` | string | Company name |
-| `tam` | string | Assigned Technical Account Manager |
-| `plan_tier` | string | Current plan |
-| `arr_usd` | int | Annual recurring revenue in USD |
-| `seats_licensed` | int | Number of licensed seats |
-| `seats_active` | int | Seats with activity in last 30 days |
-| `products` | array | Products in use |
-| `health_status` | string | Healthy, At Risk, Churning, or New |
-| `usage_trend` | string | Increasing, Stable, Declining, or Inactive |
-| `open_tickets` | int | Currently open support tickets |
-| `p1_tickets_last_30d` | int | P1 tickets in last 30 days |
-| `renewal_date` | YYYY-MM-DD | Contract renewal date |
-| `last_qbr_date` | YYYY-MM-DD | Date of last Quarterly Business Review |
-| `escalation_notes` | array | Free-text escalation observations |
-| `nps_score` | int\|null | Net Promoter Score 1–10, or null |
-| `primary_contact` | object | `name` and `title` of main contact |
-| `integrations_active` | array | Active third-party integrations |
-| `region` | string | Geographic region |
-| `industry` | string | Customer industry vertical |
+### Windows PowerShell
 
----
+From the repository root:
 
-### `knowledge-base/`
+```powershell
+py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
 
-Markdown documentation files representing a product knowledge base. These docs contain:
+Set the provider and model:
 
-- Product feature descriptions and configuration references
-- Common error codes and their meanings
-- Step-by-step troubleshooting guides
-- Plan limits and pricing information
-- Onboarding checklists and training paths
+```powershell
+$env:TAM_LLM_PROVIDER = "gemini"
+$env:TAM_MODEL = "gemini-3.1-flash-lite"
+```
 
-Candidates should use these docs as the retrieval corpus for knowledge-base lookup features.
+Enter the API key securely. Run this command, paste the actual key when prompted, and press Enter:
 
----
+```powershell
+$secureKey = Read-Host "Gemini API key" -AsSecureString
+```
 
-## Usage Notes
+Then run:
 
-- All data is **entirely synthetic**. Company names, contact details, and ticket content are fictional.
-- Ticket `account_id` values do not always match an entry in `accounts.json` — this is intentional. Handle missing account lookups gracefully.
-- The `escalation_notes` field in accounts contains plain-text observations. These are designed to test churn-risk signal detection.
-- Some tickets are deliberately ambiguous in category or urgency — this tests edge-case handling.
+```powershell
+$env:GEMINI_API_KEY = [System.Net.NetworkCredential]::new("", $secureKey).Password.Trim()
+Remove-Variable secureKey
+```
 
----
+These variables apply to the current terminal session.
 
+The application reads process environment variables directly; it does not automatically load `.env` files. `TAM_API_KEY` is an optional fallback, not an additional required key.
+
+Never commit API keys or `.env` files.
+
+## Run
+
+### 1. Offline tests
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
+### 2. Single-ticket smoke test
+
+```powershell
+.\.venv\Scripts\python.exe run.py --ticket TKT-10000
+```
+
+### 3. Generate the review outputs
+
+```powershell
+.\.venv\Scripts\python.exe run.py --set review
+```
+
+### 4. Validate the outputs
+
+```powershell
+.\.venv\Scripts\python.exe scripts/check_outputs.py
+```
+
+Expected result:
+
+```text
+10/10 valid
+```
+
+On macOS/Linux, create and activate a virtual environment, install the same requirements, export the environment variables, and use `python` instead of the Windows executable path.
+
+## Outputs
+
+Each completed ticket is saved as:
+
+```text
+outputs/<ticket_id>.json
+```
+
+The output includes category, priority, routing, escalation, TAM notification, duplicate information, clarification status, customer reply, internal note, and `reasoning_trace`.
+
+Execution metadata appends to:
+
+```text
+outputs/run_log.jsonl
+```
+
+A printed `action: finish` is an attempted finish. The runtime may reject it and request more evidence before reporting `PASS`.
+
+## Validation and Results
+
+Verified results:
+
+- **14 offline tests passed.**
+- **10/10 review outputs passed schema validation.**
+
+Checks cover strict field types, allowed values, required evidence, duplicate-field consistency, self-duplicate rejection, relevant KB citations, and mandatory critical-account escalation.
+
+**Schema validity does not establish decision accuracy.** Human review is still needed to assess diagnosis, priority, citation support, and customer-reply quality.
+
+## Retry Failed Tickets
+
+The client includes bounded retries for temporary API rate limits and timeouts. Individual failures can be rerun without regenerating other tickets:
+
+```powershell
+.\.venv\Scripts\python.exe run.py --ticket TKT-10112
+```
+
+Then rerun the output checker. Failed tickets restart from the beginning; execution logs retain previous attempts.
+
+## Limitations
+
+- The supplied assets are smaller than the dataset described in the brief.
+- The original fixed output schema and review set were unavailable; local versions were created.
+- No monthly usage history or complete incident-priority policy was supplied.
+- Priority interpretation and the 90-day renewal window are implementation assumptions.
+- Email-domain matching requires explicit domain/email data, which is absent from the supplied accounts.
+- Model instructions and structural checks cannot guarantee factual accuracy or prevent every internal-information leak.
+- Live generation requires internet access, a valid API key, and available provider quota.
+
+See [SOLUTION.md](SOLUTION.md) for the design, evaluation plan, scaling strategy, and limitations.
